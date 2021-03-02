@@ -25,7 +25,7 @@ namespace {
   constexpr INPUT keyboard_down() {
     INPUT result = {0};
     result.type = INPUT_KEYBOARD;
-    result.ki.dwFlags = KEYEVENTF_KEYUP;
+    result.ki.dwFlags = 0;
     return result;
   }
   constexpr INPUT mouse_up() {
