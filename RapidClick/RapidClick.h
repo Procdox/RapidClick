@@ -14,6 +14,7 @@ class RapidClick final: public QMainWindow
   qint32 last_activate = 0x00;
   qint32 last_output = 0x00;
 public:
+  ~RapidClick();
   RapidClick(QWidget *parent = Q_NULLPTR);
 
 private:
@@ -24,5 +25,4 @@ private:
 private slots:
   void handleActivateChanged(qint32);
   void handleOutputChanged(qint32);
-  void handleModeChanged(int);
 };

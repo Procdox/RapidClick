@@ -1,7 +1,20 @@
 #include "RapidClick.h"
 
+#include <QSettings>
 #include <QDebug>
-#include <QMouseEvent>
+
+RapidClick::~RapidClick() {
+  qDebug() << "Saving...";
+  qDebug() << ui.keys_activate->text() << ui.keys_output->text() << last_activate << last_output << ui.mode->currentIndex();
+  QSettings settings;
+  settings.beginGroup("rapid");
+  settings.setValue("last_activate", (int)last_activate);
+  settings.setValue("last_output", (int)last_output);
+  settings.setValue("title_activate", ui.keys_activate->text());
+  settings.setValue("title_output", ui.keys_output->text());
+  settings.setValue("mode", ui.mode->currentIndex());
+  settings.endGroup();
+}
 
 RapidClick::RapidClick(QWidget *parent)
     : QMainWindow(parent)
@@ -12,12 +25,24 @@ RapidClick::RapidClick(QWidget *parent)
   bool res = true;
   res &= (bool)connect(ui.keys_activate, &NativeKeySequence::nativeReady, this, &RapidClick::handleActivateChanged);
   res &= (bool)connect(ui.keys_output, &NativeKeySequence::nativeReady, this, &RapidClick::handleOutputChanged);
-  res &= (bool)connect(ui.mode, SIGNAL(activated(int)), this, SLOT(handleModeChanged(int)));
 
   Q_ASSERT(res);
 
-  ui.keys_activate->set(0x25,"Left");
-  ui.keys_output->set(0x01);
+  QSettings settings;
+  settings.beginGroup("rapid");
+  const auto last_activate = settings.value("last_activate",0x25).toInt();
+  const auto last_output = settings.value("last_output",0x01).toInt();
+  const auto title_activate = settings.value("title_activate","Left").toString();
+  const auto title_output = settings.value("title_output","").toString();
+  const auto mode = settings.value("mode",0).toInt();
+  settings.endGroup();
+
+  qDebug() << "Loading...";
+  qDebug() << title_activate << title_output << last_activate << last_output << mode;
+
+  ui.keys_activate->set(last_activate, title_activate);
+  ui.keys_output->set(last_output, title_output);
+  ui.mode->setCurrentIndex(mode);
 }
 
 bool RapidClick::event(QEvent *event){
@@ -54,14 +79,6 @@ void RapidClick::handleOutputChanged(qint32 key) {
   }
   cl.setOutput(key);
   last_output = key;
-}
-void RapidClick::handleModeChanged(int index) {
-  if( cl.isEnabled() ) {
-    if( index == 0)
-      cl.enableHold();
-    else
-      cl.enableToggle();
-  }
 }
 
 

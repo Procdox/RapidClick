@@ -76,12 +76,23 @@ class Clicker::Data {
           current_activate = activate;
           current_output = output;
 
-          if(current_output == VK_LBUTTON || current_output == VK_RBUTTON) {
+          if(current_output < 0x07) {
             up = mouse_up();
             down = mouse_down();
             if(current_output == VK_RBUTTON) {
               up.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
               down.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+            }
+            else if(current_output == VK_MBUTTON) {
+              up.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+              down.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+            }
+            else if( current_output != VK_LBUTTON ){
+              int x = (current_output == VK_XBUTTON1) ? XBUTTON1: XBUTTON2;
+              up.mi.dwFlags = MOUSEEVENTF_XUP;
+              down.mi.dwFlags = MOUSEEVENTF_XDOWN;
+              up.mi.mouseData = x;
+              down.mi.mouseData = x;
             }
           }
           else {

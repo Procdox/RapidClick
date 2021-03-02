@@ -23,6 +23,15 @@ void NativeKeySequence::set(qint32 v, const QString& s) {
   else if(last == 0x02) {
     setText("Right Mouse");
   }
+  else if(last == 0x04) {
+    setText("Middle Mouse");
+  }
+  else if(last == 0x05) {
+    setText("Back Mouse");
+  }
+  else if(last == 0x06) {
+    setText("Forward Mouse");
+  }
   else {
     setText(s);
   }
@@ -40,12 +49,23 @@ bool NativeKeySequence::event(QEvent *event) {
   }
   else if(event->type() == QEvent::MouseButtonDblClick) {
     auto click_event = static_cast<QMouseEvent*>(event);
+
     if(click_event->button() == Qt::MouseButton::LeftButton) {
       set(0x01);
     }
     else if(click_event->button() == Qt::MouseButton::RightButton) {
       set(0x02);
     }
+    else if(click_event->button() == Qt::MouseButton::MiddleButton) {
+      set(0x04);
+    }
+    else if(click_event->button() == Qt::MouseButton::BackButton) {
+      set(0x05);
+    }
+    else if(click_event->button() == Qt::MouseButton::ForwardButton) {
+      set(0x06);
+    }
+
     return true;
   }
   else if(event->type() == QEvent::Leave) {
